@@ -1,0 +1,14 @@
+fastapi
+uvicorn[standard]
+SQLAlchemy
+alembic
+psycopg2-binary
+pandas
+joblib
+paho-mqtt
+requests
+python-dotenv
+apscheduler
+playwright
+openpyxl
+python-multipart
