@@ -34,14 +34,15 @@ mqtt_worker:
     - api
 
 db:
-  image: postgres:15
+  image: mysql:8.0
+  restart: always
   environment:
-  POSTGRES_USER: postgres
-  POSTGRES_PASSWORD: postgres
-  POSTGRES_DB: postgres
+    MYSQL_ROOT_PASSWORD: ""
+    MYSQL_DATABASE: vending_forecast
+  ports:
+    - "3306:3306"
   volumes:
-    - pgdata:/var/lib/postgresql/data
-
+    - mysql_/var/lib/mysql
 
 volumes:
-  pgdata:
+  mysql_
