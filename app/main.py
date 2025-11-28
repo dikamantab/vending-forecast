@@ -23,5 +23,5 @@ def startup_event():
     scheduler = BackgroundScheduler()
     download_folder = settings.DOWNLOAD_FOLDER
     os.makedirs(download_folder, exist_ok=True)
-    scheduler.add_job(lambda: excel_service.process_pending_folder(download_folder), "interval", seconds=60)
-    scheduler.start()
+    # scheduler.add_job(lambda: excel_service.process_pending_folder(download_folder), "interval", seconds=60)
+    # scheduler.start()
