@@ -9,11 +9,17 @@ def import_sales_from_excel(path):
     db = SessionLocal()
     try:
         for _, row in df.iterrows():
-            sale = models.Sale(
-                machine_id = row.get('machine_id') or row.get('location') or 'unknown',
-                product = row['product'],
-                qty = int(row['qty']),
-                timestamp = pd.to_datetime(row['timestamp']).to_pydatetime()
+            sale = models.VendingSale(
+                order_id = row.get('Order Id') or row.get('location') or 'unknown',
+                vm_code = row.get('VM Code') or row.get('location') or 'unknown',
+                product_name = row['Product'],
+                sku = row['SKU'],
+                slot = int(row['slot']),
+                quantity = int(row['Jumlah']),
+                price = int(row['Harga asli']),
+                gross = int(row['Gross']),
+                payment_method = row['Metode Bayar'],
+                transaction_time = datetime.strptime(row['Waktu Transaksi'], '%d-%m-%Y %H:%M:%S')
             )
             db.add(sale)
         db.commit()
