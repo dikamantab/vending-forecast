@@ -12,7 +12,9 @@ class MLService:
 
     def predict(self, df: pd.DataFrame):
         # If you have preprocessing pipeline saved as joblib, load it here and transform.
-        preds = self.model.predict(df)
+        # preds = self.model.predict(df)
+        dmatrix = xgb.DMatrix(df)
+        preds = self.model.predict(dmatrix)
         return preds
     
 ml_service = MLService()
