@@ -1,6 +1,10 @@
 # vending-forecast
-
-
+1. clone repository
+2. install requirements.txt `pip install -r requirements.txt`
+3. run `uvicorn app.main:app --reload`
+4. run `python .\tests\generate_test_data.py`
+5. cek dummy data `test_data_30_days.xlsx` di folder root project 
+6. post dummy data ke localhost `http://127.0.0.1:8000/predict2/file`
 
 ## Getting started
 

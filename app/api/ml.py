@@ -36,21 +36,29 @@ async def predict_from_excel(file: UploadFile = File(...)):
             missing_feats = set(FEATURE_COLUMNS) - set(df_raw.columns)
             raise HTTPException(status_code=400, detail=f"Missing feature columns: {missing_feats}")
         
-        df_features = df_raw[FEATURE_COLUMNS].copy()
+        # df_features = df_raw[FEATURE_COLUMNS].copy()
 
         # Ensure numeric
-        df_features = df_features.astype(float)
+        # df_features = df_features.astype(float)
+
+        df_processed = ml_service.preprocess_for_model(df_raw)
 
         # Run prediction
-        preds = ml_service.predict(df_features)
+        preds = ml_service.predict(df_processed)
 
-        # return as list
-        df_raw["prediction"] = preds
+        df_result = df_processed[["Category"]].copy()
+        df_result["predicted_sales"] = preds
+
+        predictions_with_context = df_result.to_dict(orient="records")
+
+        # # return as list
+        # df_processed["prediction"] = preds
 
         return {
             "filename": file.filename,
-            "predictions": preds.tolist(),
-            "preview": df_raw.head().to_dict(orient="records")
+            "predictions": predictions_with_context,
+            # "preview": df_raw.head().to_dict(orient="records")
+            "total_forecast": len(predictions_with_context)
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error processing file: {str(e)}")
