@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from app.api import ml, temperature
 from app.database import engine
 from app import models
@@ -9,6 +10,18 @@ from apscheduler.schedulers.background import BackgroundScheduler
 import os
 
 app = FastAPI(title="Vending Forecast API")
+origins = [
+    "http://localhost:5173",   # ✅ Izinkan Vite (default port)
+    "http://localhost:3000",   # Jika kamu juga pakai React/Next.js
+    "http://127.0.0.1:5173",   # Kadang browser pakai ini
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,  # ✅ Izinkan semua origin (untuk development)
+    allow_credentials=True,
+    allow_methods=["*"],  # GET, POST, PUT, DELETE, dll
+    allow_headers=["*"],  # Semua header
+)
 app.include_router(temperature.router)
 app.include_router(ml.router)
 
