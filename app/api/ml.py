@@ -36,6 +36,11 @@ async def predict_from_excel(file: UploadFile = File(...)):
             missing_feats = set(FEATURE_COLUMNS) - set(df_raw.columns)
             raise HTTPException(status_code=400, detail=f"Missing feature columns: {missing_feats}")
         
+        feature_order = [
+            'Category', 'Total_Jumlah', 'Harga asli', 'Sales_Lag_1', 'Sales_Lag_7',
+            'Sales_RollingMean_7', 'Sales_RollingMean_14', 'DayOfWeek', 'Month'
+        ]
+        
         # df_features = df_raw[FEATURE_COLUMNS].copy()
 
         # Ensure numeric
@@ -44,10 +49,11 @@ async def predict_from_excel(file: UploadFile = File(...)):
         df_processed = ml_service.preprocess_for_model(df_raw)
 
         # Run prediction
-        preds = ml_service.predict(df_processed)
+        preds = ml_service.predict(df_processed[feature_order])
 
-        df_result = df_processed[["Category"]].copy()
-        df_result["predicted_sales"] = preds
+        df_result = df_processed[["Category", "Product", "date"]].copy()
+        df_result = df_result.rename(columns={"Category": "SKU"})
+        df_result["tomorrow_sales"] = preds
 
         predictions_with_context = df_result.to_dict(orient="records")
 
@@ -55,9 +61,13 @@ async def predict_from_excel(file: UploadFile = File(...)):
         # df_processed["prediction"] = preds
 
         return {
-            "filename": file.filename,
-            "predictions": predictions_with_context,
-            # "preview": df_raw.head().to_dict(orient="records")
+            # "filename": file.filename,
+            # "predictions": predictions_with_context,
+            # # "preview": df_raw.head().to_dict(orient="records")
+            # "total_forecast": len(predictions_with_context)
+
+            "processed": df_processed.to_dict(orient="records"),
+            "result": predictions_with_context,
             "total_forecast": len(predictions_with_context)
         }
     except Exception as e:
