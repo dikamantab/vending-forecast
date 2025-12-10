@@ -30,11 +30,20 @@ models.Base.metadata.create_all(bind=engine)
 
 @app.on_event("startup")
 def startup_event():
-    # start mqtt worker thread which posts to API
+    # ✅ 1. Buat table setelah app siap (dan env var sudah siap)
+    try:
+        models.Base.metadata.create_all(bind=engine)
+        print("✅ Database tables created successfully.")
+    except Exception as e:
+        print(f"❌ Failed to create tables: {e}")
+        raise
+
+    # ✅ 2. Start MQTT worker
     start_in_thread()
-    # scheduler to monitor shared folder for new Excel files
+
+    # ✅ 3. Setup scheduler & folder
     scheduler = BackgroundScheduler()
     download_folder = settings.DOWNLOAD_FOLDER
     os.makedirs(download_folder, exist_ok=True)
-    # scheduler.add_job(lambda: excel_service.process_pending_folder(download_folder), "interval", seconds=60)
+    # scheduler.add_job(...)
     # scheduler.start()
